@@ -1,0 +1,96 @@
+users [icon: user, color: blue] {
+  id int pk
+  name varchar(100)
+  email varchar(100)
+  phone varchar(15)
+  role varchar(20)
+}
+
+trainer_profile [icon: user, color: purple] {
+  trainer_id int pk
+  qualification varchar(150)
+  experience int
+  bio text
+  height decimal(5,2)
+  weight decimal(5,2)
+  image varchar(255)
+}
+
+client_profile [icon: user, color: green] {
+  client_id int pk
+  age int
+  height decimal(5,2)
+  weight decimal(5,2)
+  medical_conditions text
+  expectations text
+}
+
+plan [icon: clipboard, color: orange] {
+  plan_id int pk
+  trainer_id int
+  name varchar(100)
+  description text
+  duration_days int
+  price decimal(10,2)
+  plan_type varchar(50)
+}
+
+subscription [icon: repeat, color: yellow] {
+  sub_id int pk
+  client_id int
+  plan_id int
+  start_date date
+  end_date date
+  status varchar(10)
+}
+
+session [icon: video, color: red] {
+  session_id int pk
+  trainer_id int
+  client_id int
+  session_date timestamp
+  duration int
+  type varchar(50)
+  status varchar(20)
+}
+
+checkin [icon:activity, color: green] {
+  checkin_id int pk
+  client_id int
+  date date
+}
+
+trainer_note [icon: edit, color: purple] {
+  note_id int pk
+  checkin_id int
+  trainer_id int
+  feedback text
+}
+
+payment [icon: credit-card, color: blue] {
+  payment_id int pk
+  client_id int
+  sub_id int
+  amount decimal(10,2)
+  payment_date date
+  status varchar(20)
+}
+
+trainer_profile.trainer_id > users.id
+client_profile.client_id > users.id
+
+plan.trainer_id > trainer_profile.trainer_id
+
+subscription.client_id > client_profile.client_id
+subscription.plan_id > plan.plan_id
+
+session.trainer_id > trainer_profile.trainer_id
+session.client_id > client_profile.client_id
+
+checkin.client_id > client_profile.client_id
+
+trainer_note.checkin_id > checkin.checkin_id
+trainer_note.trainer_id > trainer_profile.trainer_id
+
+payment.client_id > client_profile.client_id
+payment.sub_id > subscription.sub_id
