@@ -1,3 +1,13 @@
+users [icon: user, color: blue] {
+  id int pk
+  name varchar(100)
+  email varchar(100)
+  phone varchar(15)
+  role ENUM('client','trainer','admin')
+  created_at timestamp
+  updated_at timestamp
+}
+
 trainer [icon: user, color: purple] {
   trainer_id int pk
   name varchar(100)
@@ -9,18 +19,22 @@ trainer [icon: user, color: purple] {
   height decimal(5,2)
   weight decimal(5,2)
   image varchar(255)
+  created_at timestamp
+  updated_at timestamp
 }
 
-client [icon: user, color: green] {
+client_profile [icon: user, color: green] {
   client_id int pk
   name varchar(100)
   email varchar(100)
   phone varchar(15)
-  age int
+  date_of_birth date
   height decimal(5,2)
   weight decimal(5,2)
   medical_conditions text
   goals text
+  created_at timestamp
+  updated_at timestamp
 }
 
 plan [icon: clipboard, color: orange] {
@@ -30,7 +44,9 @@ plan [icon: clipboard, color: orange] {
   description text
   duration_days int
   price decimal(10,2)
-  plan_type varchar(50)
+  plan_type ENUM('monthly','quarterly','yearly')
+  created_at timestamp
+  updated_at timestamp
 }
 
 subscription [icon: repeat, color: yellow] {
@@ -39,17 +55,25 @@ subscription [icon: repeat, color: yellow] {
   plan_id int
   start_date date
   end_date date
-  status varchar(20)
+  status ENUM('active','completed','cancelled')
+  created_at timestamp
+  updated_at timestamp
 }
 
 session [icon: video, color: red] {
   session_id int pk
   trainer_id int
-  client_id int
   session_date timestamp
   duration int
   type varchar(50)
   status varchar(20)
+  created_at timestamp
+  updated_at timestamp
+}
+
+session_participants [icon: users, color: red] {
+  session_id int
+  client_id int
 }
 
 checkin [icon: activity, color: green] {
@@ -59,40 +83,45 @@ checkin [icon: activity, color: green] {
   weight decimal(5,2)
   body_fat decimal(5,2)
   notes text
+  mood ENUM('good','average','bad')
   image_url varchar(255)
+  created_at timestamp
+  updated_at timestamp
 }
 
 trainer_note [icon: edit, color: purple] {
   note_id int pk
   checkin_id int
   trainer_id int
-  feedback text
+  note_type ENUM('diet','workout','general')
+  content text
+  created_at timestamp
 }
 
 payment [icon: credit-card, color: blue] {
   payment_id int pk
   client_id int
   sub_id int
+  transaction_id varchar(100)
   amount decimal(10,2)
-  payment_date date
-  status varchar(20)
+  payment_method ENUM('upi','card','netbanking')
+  currency varchar(10)
+  created_at timestamp
 }
-
-
-// RELATIONSHIPS
-
 plan.trainer_id > trainer.trainer_id
 
-subscription.client_id > client.client_id
+subscription.client_id > client_profile.client_id
 subscription.plan_id > plan.plan_id
 
 session.trainer_id > trainer.trainer_id
-session.client_id > client.client_id
 
-checkin.client_id > client.client_id
+session_participants.session_id > session.session_id
+session_participants.client_id > client_profile.client_id
+
+checkin.client_id > client_profile.client_id
 
 trainer_note.checkin_id > checkin.checkin_id
 trainer_note.trainer_id > trainer.trainer_id
 
-payment.client_id > client.client_id
+payment.client_id > client_profile.client_id
 payment.sub_id > subscription.sub_id
